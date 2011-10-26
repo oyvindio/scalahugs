@@ -6,9 +6,9 @@ scalaVersion := "2.9.1"
 
 resolvers += "kvikshaug.no maven Repository" at "http://mvn.kvikshaug.no"
 
+resolvers += "Scala-Tools Maven2 Snapshots Repository" at "http://scala-tools.org/repo-snapshots"
+
 libraryDependencies ++= Seq("kvikshaug" % "pircbot-patched" % "1.5.0")
 
-resolvers += "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
 
-addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "0.11.0")
 
