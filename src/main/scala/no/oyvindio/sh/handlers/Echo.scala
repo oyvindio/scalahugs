@@ -10,8 +10,6 @@ class Echo(bot: Scalahugs) extends Actor with Logging {
         case msg: IRCMessage  => {
           logger.debug("channel: %s, message: %s".format(msg.channel, msg.message))
           bot ! IRCMessage(msg.channel, msg.message)
-          bot ! "unexpected"
-          bot ! 42
         }
       }
     }
