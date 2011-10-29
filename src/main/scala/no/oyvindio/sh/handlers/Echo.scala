@@ -9,7 +9,7 @@ class Echo(bot: Scalahugs) extends Actor with Logging {
       react {
         case msg: IRCMessage  => {
           log.debug("channel: %s, message: %s".format(msg.channel, msg.message))
-          bot ! IRCMessage(msg.channel, msg.message)
+          bot ! msg.reply(msg.message)
         }
       }
     }

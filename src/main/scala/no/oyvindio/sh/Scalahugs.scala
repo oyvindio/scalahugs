@@ -1,23 +1,47 @@
 package no.oyvindio.sh
 
-import handlers.Echo
+import handlers.{JoinNotifier, Echo}
 import java.io.IOException
 import org.jibble.pircbot.{NickAlreadyInUseException, IrcException, PircBot}
 import java.lang.String
 import actors.Actor
-import org.apache.log4j.BasicConfigurator
 
-case class IRCMessage(channel: String,  message: String) {
+
+sealed trait IRCEvent {
+  val created = System.nanoTime
+  def reply(channel: String,  replyMessage: String) = Reply(this, channel, replyMessage)
+}
+
+final case class IRCMessage(channel: String, nick: String, message: String) extends IRCEvent {
   def hasTrigger = message.startsWith("!")
   def trigger = message.split(" ").head
   def args = message.substring(message.indexOf(" "))
+  def reply(replyMessage: String) = Reply(this, this.channel, replyMessage)
 }
 
-class Scalahugs extends PircBot with Actor with Logging {
+final case class IRCJoin(channel: String, nick: String) extends IRCEvent
+
+final case class Reply(inReplyTo: IRCEvent, channel: String,  message: String) {
+  val created = System.nanoTime
+  def processingTime = (this.created - inReplyTo.created) / 1000
+}
+
+object Scalahugs extends App {
+  override def main(args: Array[String]) {
+    val bot = new Scalahugs()
+    bot.connect()
+    bot.start()
+    bot.joinChannel("#grouphugs")
+  }
+}
+
+final class Scalahugs extends PircBot with Actor with Logging {
   private val nicks = Seq("sh", "sh_", "scalahugs")
 
   val echo = new Echo(this)
   echo.start()
+  val join = new JoinNotifier(this)
+  join.start()
 
   private def doConnect(host: String, port: Int): Boolean = {
     log.info("Connecting to %s:%d".format(host, port))
@@ -53,26 +77,24 @@ class Scalahugs extends PircBot with Actor with Logging {
 
   override def onMessage(channel: String, sender: String, login: String, hostname: String, message: String) {
     log.debug("[%s] %s: %s".format(channel, sender, message))
-    val msg = IRCMessage(channel, message)
-    echo ! msg
+    echo ! IRCMessage(channel, sender, message)
+  }
+
+
+  override def onJoin(channel: String, sender: String, login: String, hostname: String) {
+    log.debug("[%s] %s joined".format(channel, sender))
+    join ! IRCJoin(channel, sender)
   }
 
   def act() {
     loop {
       react {
-        case msg: IRCMessage => {
+        case msg: Reply => {
+          log.debug("got Reply{channel: %s, message: %s}".format(msg.channel, msg.message))
+          log.debug("processing took: %d ms".format(msg.processingTime))
           sendMessage(msg.channel, msg.message)
         }
       }
     }
-  }
-}
-
-object Scalahugs extends App {
-  override def main(args: Array[String]) {
-    val bot = new Scalahugs()
-    bot.connect()
-    bot.start()
-    bot.joinChannel("#grouphugs")
   }
 }
