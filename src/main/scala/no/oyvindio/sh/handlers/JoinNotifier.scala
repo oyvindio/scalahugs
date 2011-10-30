@@ -4,7 +4,7 @@ import actors.Actor
 import no.oyvindio.sh.{Reply, IRCJoin, Scalahugs, Logging}
 
 
-class JoinNotifier(bot: Scalahugs) extends Actor with Logging {
+class JoinNotifier(bot: Actor) extends Actor with Logging {
   def act() {
     loop {
       react {
