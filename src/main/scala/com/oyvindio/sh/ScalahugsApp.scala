@@ -1,6 +1,6 @@
 package com.oyvindio.sh
 
-import modules.Echo
+import modules.{MongoLogger, Echo}
 import org.jibble.pircbot.{NickAlreadyInUseException, PircBot}
 import com.typesafe.config.{ConfigException, ConfigObject, Config, ConfigFactory}
 import scala.collection.JavaConversions._
@@ -13,6 +13,8 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
   private val config = ConfigFactory.load("application.conf")
   private val log = LoggerFactory.getLogger(this.getClass)
   private val system = actorSystem
+
+
 
   // Lifecycle
  def start(): Boolean = {
@@ -84,6 +86,7 @@ object ScalahugsApp extends App {
   val bot = new Scalahugs(system)
   val botActor = system.actorOf(Props(new ScalahugsActor(bot)), "bot")
   system.eventStream.subscribe(system.actorOf(Props(new Echo(botActor.path)), "echo"), classOf[PrivMsg])
+  system.eventStream.subscribe(system.actorOf(Props(new MongoLogger(botActor.path)), "mongoLogger"), classOf[PrivMsg])
 
   bot.start()
 }
