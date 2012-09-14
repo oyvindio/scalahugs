@@ -5,7 +5,7 @@
     <append>true</append>
     <encoder>
       <!--pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern-->
-      <pattern>%d{HH:mm:ss.SSS} | %-5level | %thread | %X{akkaSource} | %logger{1} | %m%n%rEx</pattern>
+      <pattern>%d{HH:mm:ss.SSS} %-5level %thread %X{akkaSource} %logger{1} %m%n%rEx</pattern>
     </encoder>
   </appender>
 
