@@ -6,3 +6,4 @@ mongodb
 .ensime
 .history
 /scalahugs.log
+/mongo.conf
