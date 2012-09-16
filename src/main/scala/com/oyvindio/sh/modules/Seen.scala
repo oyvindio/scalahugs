@@ -3,7 +3,6 @@ package com.oyvindio.sh.modules
 import akka.actor.ActorPath
 import com.oyvindio.sh.events._
 import bot.BotMsg
-import bot.requests.GetAllNicks
 import com.oyvindio.sh.events.PrivMsg
 import akka.pattern.{AskTimeoutException, AskSupport}
 import akka.util.Timeout
@@ -22,7 +21,7 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
         } else {
           val nick = tokens(1)
 
-          val getNicksAsync = bot ? GetAllNicks()
+          val getNicksAsync = bot ? 'allNicks
           getNicksAsync onSuccess {
             case allUsers: Map[String, List[String]] => {
               val usersInChannel = allUsers.get(msg.channel)

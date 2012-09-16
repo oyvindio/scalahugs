@@ -2,7 +2,6 @@ package com.oyvindio.sh
 
 import akka.actor.{ActorLogging, Actor}
 import events.bot.BotMsg
-import events.bot.requests.GetAllNicks
 
 class BotActor(bot: Scalahugs) extends Actor with ActorLogging {
 
@@ -14,7 +13,10 @@ class BotActor(bot: Scalahugs) extends Actor with ActorLogging {
 
   protected def receive = {
     case msg: BotMsg => bot.sendMessage(msg.channel, msg.message)
-    case _: GetAllNicks => sender ! allNicks
+    case sym: Symbol => sym match {
+      case 'allNicks => sender ! allNicks
+      case _ => throw new UnsupportedOperationException("No operation for symbol '%s'".format(sym.toString()))
+    }
     case _ => log.warning("Got unexpected message!")
   }
 }
