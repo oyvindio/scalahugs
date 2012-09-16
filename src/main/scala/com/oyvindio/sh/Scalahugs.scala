@@ -1,11 +1,11 @@
 package com.oyvindio.sh
 
+import events.{Action, PrivMsg}
 import org.jibble.pircbot.{NickAlreadyInUseException, PircBot}
 import com.typesafe.config.ConfigFactory
 import scala.collection.JavaConversions._
 import akka.actor._
 import org.slf4j.LoggerFactory
-import org.joda.time.{DateTimeZone, DateTime}
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
 
@@ -16,7 +16,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
   private val system = actorSystem
 
   // Lifecycle
- def start(): Boolean = {
+  def start(): Boolean = {
     log.debug("Starting bot")
     connect()
     if (isConnected) {
@@ -28,7 +28,9 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
 
   private def getServers = {
     val servers = Scalahugs.config.getObject("sh.servers")
-    servers.keySet.map {key => servers.toConfig.getConfig(key)}
+    servers.keySet.map {
+      key => servers.toConfig.getConfig(key)
+    }
   }
 
   def connect(): Boolean = {
@@ -62,14 +64,16 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
 
   // Events
   override def onMessage(channel: String, sender: String, login: String, hostname: String, message: String) {
-    val msg = PrivMsg(new DateTime(DateTimeZone.UTC), channel, sender, login, hostname, message)
-    system.eventStream.publish(msg)
-    log.debug(msg.toString)
-
+    val event = PrivMsg(channel, sender, login, hostname, message)
+    system.eventStream.publish(event)
+    log.debug(event.toString)
   }
 
-  def sendMessage(msg: PrivMsg) {
-    sendMessage(msg.channel, msg.message)
+
+  override def onAction(sender: String, login: String, hostname: String, target: String, action: String) {
+    val event = Action(target, sender, login, hostname, action)
+    system.eventStream.publish(event)
+    log.debug(event.toString)
   }
 }
 
@@ -77,11 +81,4 @@ object Scalahugs {
   lazy val config = ConfigFactory.load("application.conf")
   RegisterJodaTimeConversionHelpers()
   lazy val db = MongoConnection()("scalahugs")
-}
-
-class BotActor(bot: Scalahugs) extends Actor with ActorLogging {
-  protected def receive = {
-    case msg: PrivMsg => bot.sendMessage(msg)
-    case _ => log.warning("got unexpected message")
-  }
 }

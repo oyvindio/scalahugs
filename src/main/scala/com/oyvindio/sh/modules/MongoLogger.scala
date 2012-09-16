@@ -1,20 +1,20 @@
 package com.oyvindio.sh.modules
 
-import com.novus.salat._
-import com.novus.salat.global._
-import com.mongodb.casbah.Imports._
-
-
 
 import akka.actor.ActorPath
-import com.oyvindio.sh.{Scalahugs, PrivMsg}
+import com.oyvindio.sh.events.{PrivMsgDAO, ActionDAO, Action, PrivMsg}
 
-class MongoLogger(botPath: ActorPath) extends ScalahugsActor(botPath) {
-  private lazy val lines = Scalahugs.db("lines") // TODO: config setting for mongo host/port (default: localhost, 27017)
+class MongoLogger(botPath: ActorPath) extends AbstractScalahugsActor(botPath) {
   protected def receive = {
     case msg: PrivMsg => {
       log.debug("Received PrivMsg: " + msg.toString)
-      lines += grater[PrivMsg].asDBObject(msg)
+      val id = PrivMsgDAO.insert(msg)
+      if (id.isDefined) log.debug("Inserted PrivMsg: " + msg.toString + " with id: ", id.get.toString)
+    }
+    case action: Action => {
+      log.debug("Received Action: " + action.toString)
+      val id = ActionDAO.insert(action)
+      if (id.isDefined) log.debug("Inserted Action: " + action.toString + " with id: ", id.get.toStringMongod)
     }
   }
 }
