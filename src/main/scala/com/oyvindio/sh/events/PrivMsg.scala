@@ -13,7 +13,8 @@ import com.mongodb.casbah.commons.MongoDBObject
 
 case class PrivMsg(channel: String, nick: String,
                    login: String, hostname: String,message: String,
-                   timestamp: DateTime = new DateTime(DateTimeZone.UTC)) extends IrcEvent(timestamp)
+                   timestamp: DateTime = new DateTime(DateTimeZone.UTC),
+                   @Key("_id") id: ObjectId = new ObjectId) extends IrcEvent(timestamp)
 
 object PrivMsgDAO extends SalatDAO[PrivMsg, ObjectId](collection = Scalahugs.db(PrivMsg.toString)) {
   def findMostRecentPrivMsg(nick: String): Option[PrivMsg] = {

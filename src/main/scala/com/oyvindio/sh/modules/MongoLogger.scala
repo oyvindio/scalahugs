@@ -9,12 +9,12 @@ class MongoLogger(botPath: ActorPath) extends AbstractScalahugsActor(botPath) {
     case msg: PrivMsg => {
       log.debug("Received PrivMsg: " + msg.toString)
       val id = PrivMsgDAO.insert(msg)
-      if (id.isDefined) log.debug("Inserted PrivMsg: " + msg.toString + " with id: ", id.get.toString)
+      if (id.isDefined) log.debug("Inserted PrivMsg: %s with id: '%s'".format(msg, id.get))
     }
     case action: Action => {
       log.debug("Received Action: " + action.toString)
       val id = ActionDAO.insert(action)
-      if (id.isDefined) log.debug("Inserted Action: " + action.toString + " with id: ", id.get.toStringMongod)
+      if (id.isDefined) log.debug("Inserted Action: %s with id: '%s'".format(action, id.get))
     }
   }
 }

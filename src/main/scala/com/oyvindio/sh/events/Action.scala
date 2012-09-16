@@ -13,7 +13,8 @@ import com.mongodb.casbah.commons.MongoDBObject
 
 case class Action(channel: String, nick: String,
                   login: String, hostname: String, action: String,
-                  timestamp: DateTime = new DateTime(DateTimeZone.UTC)) extends IrcEvent(timestamp)
+                  timestamp: DateTime = new DateTime(DateTimeZone.UTC),
+                  @Key("_id") id: ObjectId = new ObjectId) extends IrcEvent(timestamp)
 
 object ActionDAO extends SalatDAO[Action, ObjectId](collection = Scalahugs.db(Action.toString)) {
   def findMostRecentAction(nick: String): Option[Action] = {
