@@ -17,7 +17,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
 
   // Lifecycle
   def start(): Boolean = {
-    log.debug("Starting bot")
+    log.info("Starting bot")
     connect()
     if (isConnected) {
       joinChannels()
@@ -40,7 +40,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
         try {
           val host = server.getString("host")
           val port = server.getInt("port")
-          log.debug("Connecting to %s:%d".format(host, port))
+          log.info("Connecting to %s:%d".format(host, port))
           if (server.hasPath("password")) {
             connect(host, port, server.getString("password"))
           } else {
@@ -69,11 +69,14 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
     log.debug(event.toString)
   }
 
-
   override def onAction(sender: String, login: String, hostname: String, target: String, action: String) {
     val event = Action(target, sender, login, hostname, action)
     system.eventStream.publish(event)
     log.debug(event.toString)
+  }
+
+  override def onConnect() {
+    log.info("Connected to %s:%d".format(getServer, getPort))
   }
 }
 
