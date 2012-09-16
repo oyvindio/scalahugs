@@ -31,13 +31,13 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
                 lookupNickInDatabase(msg.nick, nick)
               }
 
-              bot ! new BotMsg(msg.channel, reply)
+              privMsg(msg.channel, reply)
             }
           }
 
           getNicksAsync onFailure {
             case timeout: AskTimeoutException => {
-              bot ! new BotMsg(msg.channel, lookupNickInDatabase(msg.nick, nick))
+              privMsg(msg.channel, lookupNickInDatabase(msg.nick, nick))
             }
             case e: Exception => log.error(e,
                           "Exception while checking if '%s' is currently in '%s'!".format(nick, msg.channel))
