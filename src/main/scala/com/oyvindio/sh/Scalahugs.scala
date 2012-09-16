@@ -59,7 +59,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
   }
 
   def joinChannels() {
-    joinChannel("#scalahugs")
+    config.getStringList("sh.channels").foreach(joinChannel(_))
   }
 
   // Events
