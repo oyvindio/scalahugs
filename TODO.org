@@ -1,0 +1,14 @@
+* Modules
+** Passive
+*** TODO Opers
+*** TODO Urlcatch
+*** TODO Wordcount
+** Active
+*** TODO Google search
+*** TODO (Google) calculator
+*** TODO Episode guide/tvrage
+*** TODO Timer
+*** TODO Tracking
+*** TODO Karma
+*** TODO isup
+*** TODO Pingall
