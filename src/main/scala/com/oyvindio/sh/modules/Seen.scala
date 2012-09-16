@@ -13,42 +13,33 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
 
   protected def receive = {
     case msg: PrivMsg => {
-
       if (msg.message.startsWith("!seen ")) {
         val tokens = msg.message.split(' ')
         if (tokens.length < 2) {
           bot ! new BotMsg(msg.channel, "Usage: !seen NICK")
         } else {
           val nick = tokens(1)
-
-          val getNicksAsync = bot ? 'allNicks
-          getNicksAsync onSuccess {
-            case allUsers: Map[String, List[String]] => {
-              val usersInChannel = allUsers.get(msg.channel)
-              val reply = if (usersInChannel.isDefined && usersInChannel.get.contains(nick)) {
-                "%s: %s is here right now!".format(msg.nick, nick)
-              } else {
-                lookupNickInDatabase(msg.nick, nick)
+          (bot ? 'allNicks).mapTo[Map[String, List[String]]] onComplete {
+            case Right(allNicks) => {
+              allNicks.get(msg.channel) match {
+                case Some(nicks) if nicks.contains(nick) => privMsg(msg.channel, "%s: %s is here right now!".format(msg.nick, nick))
+                case _ => privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
               }
-
-              privMsg(msg.channel, reply)
             }
-          }
-
-          getNicksAsync onFailure {
-            case timeout: AskTimeoutException => {
-              privMsg(msg.channel, lookupNickInDatabase(msg.nick, nick))
+            case Left(exception) if exception.isInstanceOf[AskTimeoutException] => {
+              privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
             }
-            case e: Exception => log.error(e,
-                          "Exception while checking if '%s' is currently in '%s'!".format(nick, msg.channel))
+            case Left(exception) => log.error(exception,
+              "Exception while checking if '%s' is currently in '%s'!".format(nick, msg.channel))
           }
         }
       }
     }
   }
 
-  def lookupNickInDatabase(sender: String, nick: String): String = {
-    mostRecentEvent(findEventsForNick(nick)) match {
+  private def lookForActivityFromUser(sender: String, nick: String): String = {
+    val event = mostRecentEvent(findEventsForNick(nick))
+    event.get match {
       case p: PrivMsg => "%s: %s was last seen at %s, saying '%s'.".format(
         sender, p.nick, p.timestampAsLocalTime, p.message)
       case a: Action => "%s: %s was last seen at %s, '* %s'.".format(
