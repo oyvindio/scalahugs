@@ -40,7 +40,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
         try {
           val host = server.getString("host")
           val port = server.getInt("port")
-          log.info("Connecting to %s:%d".format(host, port))
+          log.info("Connecting to %s:%d as %s".format(host, port, nick))
           if (server.hasPath("password")) {
             connect(host, port, server.getString("password"))
           } else {
@@ -76,7 +76,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
   }
 
   override def onConnect() {
-    log.info("Connected to %s:%d".format(getServer, getPort))
+    log.info("Connected to %s:%d as %s".format(getServer, getPort, getNick))
   }
 }
 
