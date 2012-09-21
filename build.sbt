@@ -2,6 +2,8 @@ import AssemblyKeys._
 
 assemblySettings
 
+organization := "com.oyvindio"
+
 name := "scalahugs"
 
 version := "1.0-SNAPSHOT"
@@ -28,6 +30,8 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.0.7",
   "org.slf4j" % "slf4j-api" % "1.7.0",
   "com.novus" %% "salat" % "1.9.1",
+  "net.databinder.dispatch" %% "core" % "0.9.1",
+  "net.databinder.dispatch" %% "jsoup" % "0.9.1",
   "org.scalatest" %% "scalatest" % "1.8" % "test",
   "org.scalamock" %% "scalamock-scalatest-support" % "2.4" % "test"
 )
