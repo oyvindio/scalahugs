@@ -15,12 +15,9 @@ class SeenTest extends TestKit(ActorSystem("test")) with FunSuite with ShouldMat
 
   test("mostRecentEvent should return the most recent event") {
     val events = List(
-      PrivMsg("#foo", "bar", "baz", "quez.tld", "123",
-        new DateTime(DateTimeZone.UTC).minus(1000)),
-      Action("#foo", "bar", "baz", "quez.tld", "test",
-        new DateTime(DateTimeZone.UTC).minus(100)),
-      PrivMsg("#foo", "bar", "baz", "quez.tld", "message",
-        new DateTime(DateTimeZone.UTC))
+      PrivMsg("#foo", "bar", "baz", "quez.tld", "123"),
+      Action("#foo", "bar", "baz", "quez.tld", "test"),
+      PrivMsg("#foo", "bar", "baz", "quez.tld", "message")
     )
 
     seen invokePrivate mostRecentEvent(events) should equal(Some(events.last))

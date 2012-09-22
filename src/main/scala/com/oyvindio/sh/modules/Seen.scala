@@ -7,6 +7,7 @@ import com.oyvindio.sh.events.PrivMsg
 import akka.pattern.{AskTimeoutException, AskSupport}
 import akka.util.Timeout
 import akka.util.duration._
+import com.oyvindio.sh.dao.{ActionDAO, PrivMsgDAO}
 
 class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskSupport {
   implicit val timeout = Timeout(5 seconds)
@@ -50,8 +51,8 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
 
   private def findEventsForNick(nick: String): List[IrcEvent] = {
     List(
-      PrivMsgDAO.findMostRecentPrivMsg(nick),
-      ActionDAO.findMostRecentAction(nick)
+      PrivMsgDAO.findMostRecentPrivMsgFor(nick),
+      ActionDAO.findMostRecentActionFor(nick)
     ).flatten
   }
 
