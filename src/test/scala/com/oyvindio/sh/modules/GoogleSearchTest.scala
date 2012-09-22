@@ -9,8 +9,9 @@ import org.jsoup.Jsoup
 import java.net.URL
 
 class GoogleSearchTest extends TestKit(ActorSystem("test")) with FunSuite with ShouldMatchers with PrivateMethodTester {
-  val google = TestActorRef(new GoogleSearch(ActorPath.fromString("akka://test"))).underlyingActor
-  val googleSoup = Jsoup.parse(Source.fromURL(getClass.getResource("/google-search.html"), "UTF-8").mkString)
+  val google = TestActorRef(new GoogleSearch(testActor.path)).underlyingActor
+  val googleSoup = Jsoup.parse(Source.fromURL(
+    getClass.getResource("/google-search.html"), "UTF-8").mkString)
 
   test("searchResult should return 10 Elements") {
     google.searchResults(googleSoup) should have length(10)

@@ -8,9 +8,9 @@ import akka.actor.{ActorSystem, ActorPath}
 import akka.testkit.TestActorRef
 import akka.testkit.TestKit
 
-class SeenTest extends TestKit(ActorSystem("test")) with FunSuite with ShouldMatchers with PrivateMethodTester {
-  val path = ActorPath.fromString("akka://test")
-  val seen = TestActorRef(new Seen(path)).underlyingActor
+class SeenTest extends TestKit(ActorSystem("test")) with FunSuite
+  with ShouldMatchers with PrivateMethodTester {
+  val seen = TestActorRef(new Seen(testActor.path)).underlyingActor
   val mostRecentEvent = PrivateMethod[Option[IrcEvent]]('mostRecentEvent)
 
   test("mostRecentEvent should return the most recent event") {
