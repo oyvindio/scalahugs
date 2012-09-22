@@ -1,20 +1,23 @@
 package com.oyvindio.sh
 
 import akka.actor.{Props, ActorSystem}
-import modules.{GoogleSearch, Seen, MongoLogger}
+import modules.{EpisodeInfo, GoogleSearch, Seen, MongoLogger}
 import com.oyvindio.sh.events._
+import akka.event.EventStream
 
 object Main extends App {
   val system = ActorSystem("scalahugs")
   val bot = new Scalahugs(system)
-
+  val events = system.eventStream
   val botActor = system.actorOf(Props(new BotActor(bot)), "bot")
   val mongoLogger = system.actorOf(Props(new MongoLogger(botActor.path)), "mongo-logger")
-  system.eventStream.subscribe(mongoLogger, classOf[PrivMsg])
-  system.eventStream.subscribe(mongoLogger, classOf[Action])
-  system.eventStream.subscribe(mongoLogger, classOf[Trigger])
-  system.eventStream.subscribe(system.actorOf(Props(new Seen(botActor.path)), "seen"), classOf[Trigger])
-  system.eventStream.subscribe(system.actorOf(Props(new GoogleSearch(botActor.path)), "google-search"), classOf[Trigger])
+
+  events.subscribe(mongoLogger, classOf[PrivMsg])
+  events.subscribe(mongoLogger, classOf[Action])
+  events.subscribe(mongoLogger, classOf[Trigger])
+  events.subscribe(system.actorOf(Props(new Seen(botActor.path)), "seen"), classOf[Trigger])
+  events.subscribe(system.actorOf(Props(new GoogleSearch(botActor.path)), "google-search"), classOf[Trigger])
+  events.subscribe(system.actorOf(Props(new EpisodeInfo(botActor.path)), "episode-info"), classOf[Trigger])
 
   bot.start()
 }

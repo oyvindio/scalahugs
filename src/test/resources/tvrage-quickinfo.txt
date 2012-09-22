@@ -1,0 +1,16 @@
+Show ID@18164
+Show Name@Breaking Bad
+Show URL@http://www.tvrage.com/Breaking_Bad
+Premiered@2008
+Started@Jan/20/2008
+Ended@
+Latest Episode@05x08^Gliding Over All^Sep/02/2012
+Next Episode@05x09^TBA^Jul/2013
+GMT+0 NODST@
+Country@USA
+Status@Final Season
+Classification@Scripted
+Genres@Drama
+Network@AMC
+Airtime@Sunday at 10:00 pm
+Runtime@60

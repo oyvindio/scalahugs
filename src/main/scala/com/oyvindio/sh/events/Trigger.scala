@@ -8,6 +8,7 @@ case class Trigger(channel: String, nick: String, login: String,
 
   def trigger = tokens.head
   def args = tokens.tail
+  def allArgs = tokens.tail.mkString(" ")
   def hasArgs = !tokens.tail.isEmpty
   def tokens = message.substring(1).split(" ").toList
 }
