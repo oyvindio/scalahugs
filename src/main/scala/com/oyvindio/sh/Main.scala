@@ -13,8 +13,8 @@ object Main extends App {
   system.eventStream.subscribe(mongoLogger, classOf[PrivMsg])
   system.eventStream.subscribe(mongoLogger, classOf[Action])
   system.eventStream.subscribe(mongoLogger, classOf[Trigger])
-  system.eventStream.subscribe(system.actorOf(Props(new Seen(botActor.path)), "seen"), classOf[PrivMsg])
-  system.eventStream.subscribe(system.actorOf(Props(new GoogleSearch(botActor.path)), "google-search"), classOf[PrivMsg])
+  system.eventStream.subscribe(system.actorOf(Props(new Seen(botActor.path)), "seen"), classOf[Trigger])
+  system.eventStream.subscribe(system.actorOf(Props(new GoogleSearch(botActor.path)), "google-search"), classOf[Trigger])
 
   bot.start()
 }

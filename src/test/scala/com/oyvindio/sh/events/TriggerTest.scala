@@ -23,6 +23,7 @@ class TriggerTest extends FunSuite with ShouldMatchers {
     val trigger = Trigger("#test", "foo", "bar", "localhost",
       "!test param1 param2 param3")
 
+    trigger.hasArgs should  be(true)
     trigger.args should equal(List("param1", "param2", "param3"))
   }
 
@@ -40,5 +41,6 @@ class TriggerTest extends FunSuite with ShouldMatchers {
     trigger.trigger should equal("test")
     trigger.args should equal(List())
     trigger.tokens should equal(List("test"))
+    trigger.hasArgs should be(false)
   }
 }

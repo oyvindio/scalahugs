@@ -1,6 +1,6 @@
 package com.oyvindio.sh
 
-import events.{Action, PrivMsg}
+import events.{Trigger, Action, PrivMsg}
 import org.jibble.pircbot.{NickAlreadyInUseException, PircBot}
 import com.typesafe.config.ConfigFactory
 import scala.collection.JavaConversions._
@@ -8,12 +8,14 @@ import akka.actor._
 import org.slf4j.LoggerFactory
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.conversions.scala._
+import akka.event.EventStream
 
 
 class Scalahugs(actorSystem: ActorSystem) extends PircBot {
   private val config = ConfigFactory.load("application.conf")
   private val log = LoggerFactory.getLogger(this.getClass)
   private val system = actorSystem
+  private val eventStream = system.eventStream
 
   // Lifecycle
   def start(): Boolean = {
@@ -62,16 +64,23 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
     config.getStringList("sh.channels").foreach(joinChannel(_))
   }
 
+
   // Events
   override def onMessage(channel: String, sender: String, login: String, hostname: String, message: String) {
     val event = PrivMsg(channel, sender, login, hostname, message)
-    system.eventStream.publish(event)
+    eventStream.publish(event)
     log.debug(event.toString)
+
+    if (message.startsWith(Trigger.trigger)) {
+      val trigger = Trigger(channel, sender, login, hostname, message)
+      eventStream.publish(trigger)
+      log.debug(trigger.toString)
+    }
   }
 
   override def onAction(sender: String, login: String, hostname: String, target: String, action: String) {
     val event = Action(target, sender, login, hostname, action)
-    system.eventStream.publish(event)
+    eventStream.publish(event)
     log.debug(event.toString)
   }
 

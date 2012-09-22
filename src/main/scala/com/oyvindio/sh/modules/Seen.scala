@@ -13,27 +13,21 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
   implicit val timeout = Timeout(5 seconds)
 
   protected def receive = {
-    case msg: PrivMsg => {
-      if (msg.message.startsWith("!seen ")) {
-        val tokens = msg.message.split(' ')
-        if (tokens.length < 2) {
-          bot ! new BotMsg(msg.channel, "Usage: !seen NICK")
-        } else {
-          val nick = tokens(1)
-          (bot ? 'allNicks).mapTo[Map[String, List[String]]] onComplete {
-            case Right(allNicks) => {
-              allNicks.get(msg.channel) match {
-                case Some(nicks) if nicks.contains(nick) => privMsg(msg.channel, "%s: %s is here right now!".format(msg.nick, nick))
-                case _ => privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
-              }
-            }
-            case Left(exception) if exception.isInstanceOf[AskTimeoutException] => {
-              privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
-            }
-            case Left(exception) => log.error(exception,
-              "Exception while checking if '%s' is currently in '%s'!".format(nick, msg.channel))
+    case msg: Trigger if !msg.hasArgs => bot ! new BotMsg(msg.channel, "Usage: !seen NICK")
+    case msg: Trigger if msg.hasArgs && msg.trigger == "seen" => {
+      val nick = msg.args.head
+      (bot ? 'allNicks).mapTo[Map[String, List[String]]] onComplete {
+        case Right(allNicks) => {
+          allNicks.get(msg.channel) match {
+            case Some(nicks) if nicks.contains(nick) => privMsg(msg.channel, "%s: %s is here right now!".format(msg.nick, nick))
+            case _ => privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
           }
         }
+        case Left(exception) if exception.isInstanceOf[AskTimeoutException] => {
+          privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
+        }
+        case Left(exception) => log.error(exception,
+          "Exception while checking if '%s' is currently in '%s'!".format(nick, msg.channel))
       }
     }
   }

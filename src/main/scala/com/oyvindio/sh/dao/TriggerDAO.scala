@@ -12,4 +12,4 @@ import com.novus.salat.dao._
 
 
 object TriggerDAO extends SalatDAO[Trigger, ObjectId](
-  collection = Scalahugs.db(Trigger.toString))
+  collection = Scalahugs.db("Module" + Trigger.toString))
