@@ -11,7 +11,7 @@ import com.novus.salat.annotations._
 import com.novus.salat.dao._
 
 object ActionDAO extends SalatDAO[Action, ObjectId](collection =
-  Scalahugs.db(Action.toString)) {
+  Scalahugs.db("Actions")) {
   def findMostRecentActionFor(nick: String): Option[Action] = {
     val results = find(MongoDBObject("nick" -> nick))
                     .sort(MongoDBObject("timestamp" -> -1))

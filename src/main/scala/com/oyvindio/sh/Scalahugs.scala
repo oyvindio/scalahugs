@@ -71,7 +71,7 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
     eventStream.publish(event)
     log.debug(event.toString)
 
-    if (message.startsWith(Trigger.trigger)) {
+    if (message.startsWith(Trigger.prefix)) {
       val trigger = Trigger(channel, sender, login, hostname, message)
       eventStream.publish(trigger)
       log.debug(trigger.toString)

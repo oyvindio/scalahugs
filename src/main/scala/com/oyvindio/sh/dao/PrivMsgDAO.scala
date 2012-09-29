@@ -12,7 +12,7 @@ import com.novus.salat.dao._
 
 
 object PrivMsgDAO extends SalatDAO[PrivMsg, ObjectId](collection =
-  Scalahugs.db(PrivMsg.toString)) {
+  Scalahugs.db("PrivMsgs")) {
   def findMostRecentPrivMsgFor(nick: String): Option[PrivMsg] = {
     val results = find(MongoDBObject("nick" -> nick))
                     .sort(MongoDBObject("timestamp" -> -1))

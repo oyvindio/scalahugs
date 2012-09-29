@@ -3,8 +3,8 @@ package com.oyvindio.sh.events
 
 case class Trigger(channel: String, nick: String, login: String,
                    hostname: String, message: String) extends IrcEvent {
-  require(message.startsWith(Trigger.trigger),
-    "Trigger.message must start with %s".format(Trigger.trigger))
+  require(message.trim.startsWith(Trigger.prefix),
+    "Trigger.message must start with %s".format(Trigger.prefix))
 
   def trigger = tokens.head
   def args = tokens.tail
@@ -14,5 +14,5 @@ case class Trigger(channel: String, nick: String, login: String,
 }
 
 object Trigger {
-  val trigger = "!"
+  val prefix = "!"
 }

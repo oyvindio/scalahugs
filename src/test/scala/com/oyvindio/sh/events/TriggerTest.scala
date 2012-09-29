@@ -6,7 +6,7 @@ import org.scalatest.matchers.ShouldMatchers
 
 class TriggerTest extends FunSuite with ShouldMatchers {
 
-  test("trigger must start with %s".format(Trigger.trigger)) {
+  test("trigger must start with %s".format(Trigger.prefix)) {
     intercept[IllegalArgumentException] {
       Trigger("#test", "foo", "bar", "localhost", "invalid trigger!")
     }
