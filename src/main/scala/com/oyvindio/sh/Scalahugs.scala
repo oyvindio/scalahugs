@@ -92,5 +92,6 @@ class Scalahugs(actorSystem: ActorSystem) extends PircBot {
 object Scalahugs {
   lazy val config = ConfigFactory.load("application.conf")
   RegisterJodaTimeConversionHelpers()
-  lazy val db = MongoConnection()("scalahugs")
+  val db = MongoConnection()("scalahugs")
+  db.writeConcern = WriteConcern.Safe
 }
