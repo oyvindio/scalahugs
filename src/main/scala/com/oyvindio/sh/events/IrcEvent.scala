@@ -8,7 +8,12 @@ import org.bson.types.ObjectId
 
 @Salat
 abstract class IrcEvent(timestamp: DateTime = new DateTime(DateTimeZone.UTC),
-                        @Key("_id") id: ObjectId = new ObjectId) {
+                        @Key("_id") id: ObjectId = new ObjectId) extends Hostmask {
+  val channel: String
+  val nick: String
+  val login: String
+  val hostname: String
+
   def timestampAsLocalTime = timestamp.toDateTime(DateTimeZone.forID(IrcEvent.timezone))
   def timestampAsUTC = timestamp.toDateTime(DateTimeZone.UTC)
 }
