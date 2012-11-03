@@ -1,11 +1,16 @@
 package com.oyvindio.sh
 
-import akka.actor.{Props, ActorSystem}
-import modules.{EpisodeInfo, GoogleSearch, Seen, MongoLogger}
+import akka.actor.{ActorRef, Props, ActorSystem}
+import events.Action
+import events.PrivMsg
+import modules._
 import com.oyvindio.sh.events._
 import akka.event.EventStream
+import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 
 object Main extends App {
+  RegisterJodaTimeConversionHelpers()
+
   val system = ActorSystem("scalahugs")
   val bot = new Scalahugs(system)
   val events = system.eventStream
@@ -18,6 +23,9 @@ object Main extends App {
   events.subscribe(system.actorOf(Props(new Seen(botActor.path)), "seen"), classOf[Trigger])
   events.subscribe(system.actorOf(Props(new GoogleSearch(botActor.path)), "google-search"), classOf[Trigger])
   events.subscribe(system.actorOf(Props(new EpisodeInfo(botActor.path)), "episode-info"), classOf[Trigger])
+  val op: ActorRef = system.actorOf(Props(new Opers(botActor.path)), "opers")
+  events.subscribe(op, classOf[PrivMsg])
+  events.subscribe(op, classOf[Action])
 
   bot.start()
 }
