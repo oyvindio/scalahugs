@@ -2,12 +2,13 @@ package com.oyvindio.sh.modules
 
 import akka.actor.ActorPath
 import com.oyvindio.sh.events._
-import bot.BotMsg
+import bot.{Users, BotMsg}
 import com.oyvindio.sh.events.PrivMsg
 import akka.pattern.{AskTimeoutException, AskSupport}
 import akka.util.Timeout
 import akka.util.duration._
 import com.oyvindio.sh.dao.{ActionDAO, PrivMsgDAO}
+import org.jibble.pircbot.User
 
 class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskSupport {
   implicit val timeout = Timeout(5 seconds)
@@ -16,14 +17,17 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
     case msg: Trigger if !msg.hasArgs => bot ! new BotMsg(msg.channel, "Usage: !seen NICK")
     case msg: Trigger if msg.hasArgs && msg.trigger == "seen" => {
       val nick = msg.args.head
-      (bot ? 'allNicks).mapTo[Map[String, List[String]]] onComplete {
-        case Right(allNicks) => {
-          allNicks.get(msg.channel) match {
-            case Some(nicks) if nicks.contains(nick) => privMsg(msg.channel, "%s: %s is here right now!".format(msg.nick, nick))
-            case _ => privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
+      (bot ? Users(msg.channel)).mapTo[List[User]] onComplete {
+        case Right(users) => {
+          val user = users.find(_.getNick.equals(nick))
+          if (user.isDefined) {
+            privMsg(msg.channel, "%s: %s is here right now!".format(msg.nick, nick))
+          } else {
+            privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
           }
         }
         case Left(exception) if exception.isInstanceOf[AskTimeoutException] => {
+          print("timeout")
           privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
         }
         case Left(exception) => log.error(exception,
@@ -34,10 +38,10 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
 
   private def lookForActivityFromUser(sender: String, nick: String): String = {
     val event = mostRecentEvent(findEventsForNick(nick))
-    event.get match {
-      case p: PrivMsg => "%s: %s was last seen at %s, saying '%s'.".format(
+    event match {
+      case Some(p: PrivMsg) => "%s: %s was last seen at %s, saying '%s'.".format(
         sender, p.nick, p.timestampAsLocalTime, p.message)
-      case a: Action => "%s: %s was last seen at %s, '* %s'.".format(
+      case Some(a: Action) => "%s: %s was last seen at %s, '* %s'.".format(
         sender, a.nick, a.timestampAsLocalTime, a.action)
       case _ => "I haven't seen %s yet.".format(nick)
     }
