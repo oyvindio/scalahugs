@@ -7,3 +7,4 @@ mongodb
 .history
 /scalahugs.log
 /mongo.conf
+/ngircd.conf
