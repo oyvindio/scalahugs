@@ -25,7 +25,7 @@ class Opers(botPath: ActorPath) extends AbstractScalahugsActor(botPath) {
     }
   }
 
-  def shouldOp(event: IrcEvent): Boolean = {
+  private def shouldOp(event: IrcEvent): Boolean = {
     val operHostmasks = try {
       Scalahugs.config.getStringList("sh.opers.%s".format(event.channel.replaceAllLiterally("#",""))).toList
     } catch {
@@ -43,7 +43,7 @@ class Opers(botPath: ActorPath) extends AbstractScalahugsActor(botPath) {
     hostmask.isDefined
   }
 
-  def op(event: IrcEvent) {
+  private def op(event: IrcEvent) {
     bot ! Op(event.channel, event.nick)
   }
 

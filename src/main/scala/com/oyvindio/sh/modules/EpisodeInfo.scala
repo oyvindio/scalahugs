@@ -45,7 +45,7 @@ with HttpSupport {
     }
   }
 
-  def parseQuickInfo(quickInfo: String): Map[String, String] = {
+  private def parseQuickInfo(quickInfo: String): Map[String, String] = {
     quickInfo.split("\n").flatMap(parseQuickInfoLine(_)).toMap
   }
 
