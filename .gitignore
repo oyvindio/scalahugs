@@ -1,6 +1,7 @@
 .idea
 .idea_modules
-project
+project/boot/
+project/plugins/project/
 target
 mongodb
 .ensime
