@@ -21,7 +21,7 @@ class Title(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with Htt
   }
 
   private def titleMsgForUrl(channel: String, url: String) {
-    Http(request(url) OK as.jsoup.Document) onComplete { // TODO: doesn't follow redirects?
+    Http(request(url) OK as.jsoup.Document) onComplete {
       case Right(document) => {
         extractTitle(document) match {
           case Some(title: String) => privMsg(channel, "Title: %s".format(title))
