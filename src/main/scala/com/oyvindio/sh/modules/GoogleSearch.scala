@@ -9,8 +9,8 @@ import java.net.URLEncoder.encode
 
 class GoogleSearch(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with HttpSupport {
   protected def receive = {
-    case msg: Trigger if !msg.hasArgs => privMsg(msg.channel, "Usage: !g SEARCH-TERM")
-    case msg: Trigger if msg.hasArgs && msg.trigger == "g" => {
+    case msg: Trigger if msg.trigger == "g" && !msg.hasArgs => privMsg(msg.channel, "Usage: !g SEARCH-TERM")
+    case msg: Trigger if msg.trigger == "g" && msg.hasArgs => {
       val searchTerms = msg.args.mkString(" ")
       Http(request("http://www.google.com/search").addQueryParameter("q", searchTerms) OK as.jsoup.Document) onComplete {
         case Right(document) => {

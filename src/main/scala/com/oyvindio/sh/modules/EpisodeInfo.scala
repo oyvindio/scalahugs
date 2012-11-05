@@ -11,8 +11,8 @@ class EpisodeInfo(botPath: ActorPath) extends AbstractScalahugsActor(botPath)
 with HttpSupport {
 
   protected def receive = {
-    case msg: Trigger if !msg.hasArgs => privMsg(msg.channel, "Usage: !ep SHOW")
-    case msg: Trigger if msg.hasArgs && msg.trigger == "ep" => {
+    case msg: Trigger if msg.trigger == "ep" && !msg.hasArgs => privMsg(msg.channel, "Usage: !ep SHOW")
+    case msg: Trigger if msg.trigger == "ep" && msg.hasArgs => {
       Http(request("http://services.tvrage.com/tools/quickinfo.php")
         .addQueryParameter("show", msg.allArgs) OK as.String) onComplete {
         case Right(response) => {

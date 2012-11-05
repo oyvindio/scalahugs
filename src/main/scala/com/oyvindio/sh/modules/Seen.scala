@@ -14,8 +14,8 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
   implicit val timeout = Timeout(5 seconds)
 
   protected def receive = {
-    case msg: Trigger if !msg.hasArgs => bot ! new BotMsg(msg.channel, "Usage: !seen NICK")
-    case msg: Trigger if msg.hasArgs && msg.trigger == "seen" => {
+    case msg: Trigger if msg.trigger == "seen" && !msg.hasArgs => privMsg(msg.channel, "Usage: !seen NICK")
+    case msg: Trigger if msg.trigger == "seen" && msg.hasArgs  => {
       val nick = msg.args.head
       (bot ? Users(msg.channel)).mapTo[List[User]] onComplete {
         case Right(users) => {
