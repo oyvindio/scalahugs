@@ -27,7 +27,6 @@ class Seen(botPath: ActorPath) extends AbstractScalahugsActor(botPath) with AskS
           }
         }
         case Left(exception) if exception.isInstanceOf[AskTimeoutException] => {
-          print("timeout")
           privMsg(msg.channel, lookForActivityFromUser(msg.nick, nick))
         }
         case Left(exception) => log.error(exception,
