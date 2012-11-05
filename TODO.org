@@ -4,7 +4,7 @@
 *** DONE Urlcatch
 *** TODO Wordcount
 ** Active
-*** TODO Google search
+*** DONE Google searchd
 *** TODO (Google) calculator
 *** DONE Episode guide/tvrage
 *** TODO Timer
