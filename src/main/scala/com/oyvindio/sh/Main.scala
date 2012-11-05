@@ -28,6 +28,7 @@ object Main extends App {
   val title = system.actorOf(Props(new Title(botActor.path)), "title")
   events.subscribe(title, classOf[PrivMsg])
   events.subscribe(title, classOf[Action])
+  events.subscribe(system.actorOf(Props(new PingAll(botActor.path)), "ping-all"), classOf[Trigger])
 
   bot.start()
 }
